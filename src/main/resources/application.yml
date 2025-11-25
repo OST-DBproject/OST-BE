@@ -4,4 +4,4 @@ server:
 spotify:
   client-id: ${SPOTIFY_CLIENT_ID}
   client-secret: ${SPOTIFY_CLIENT_SECRET}
-  redirect-uri: http://localhost:8080/auth/spotify/callback
+  redirect-uri: http://127.0.0.1:8080/auth/callback
