@@ -1,5 +1,6 @@
 package com.example.ost.domain.track;
 
+import com.example.ost.domain.user.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,7 +12,10 @@ public class LikedTrack {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Spotify 트랙 ID
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(nullable = false, unique = true)
     private String spotifyTrackId;
 
@@ -28,22 +32,18 @@ public class LikedTrack {
 
     protected LikedTrack() {}
 
-    public LikedTrack(String trackId) {
-        this.spotifyTrackId = trackId;
-        this.likedAt = LocalDateTime.now();
-    }
-
-    public LikedTrack(String spotifyTrackId,
+    public LikedTrack(User user,
+                      String spotifyTrackId,
                       String trackName,
                       String artistName,
-                      String albumName,
-                      LocalDateTime likedAt) {
+                      String albumName) {
 
+        this.user = user;
         this.spotifyTrackId = spotifyTrackId;
         this.trackName = trackName;
         this.artistName = artistName;
         this.albumName = albumName;
-        this.likedAt = likedAt;
+        this.likedAt = LocalDateTime.now();
     }
 
     public Long getId() {

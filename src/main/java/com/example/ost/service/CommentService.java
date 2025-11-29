@@ -1,9 +1,9 @@
 package com.example.ost.service;
 
-import com.example.ost.domain.track.LikedTrack;
+import com.example.ost.domain.user.User;
 import com.example.ost.model.Comment;
 import com.example.ost.repository.CommentRepository;
-import com.example.ost.repository.LikedTrackRepository;
+import com.example.ost.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,15 +12,18 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepo;
-    private final LikedTrackRepository likedTrackRepo;
+    private final UserRepository userRepo;
 
-    public CommentService(CommentRepository commentRepo, LikedTrackRepository likedTrackRepo) {
+    public CommentService(CommentRepository commentRepo, UserRepository userRepo) {
         this.commentRepo = commentRepo;
-        this.likedTrackRepo = likedTrackRepo;
+        this.userRepo = userRepo;
     }
 
-    public Comment addComment(String trackId, String content) {
-        Comment comment = new Comment(trackId, content);
+    public Comment addComment(String spotifyId, String trackId, String content) {
+        User user = userRepo.findBySpotifyId(spotifyId)
+                .orElseThrow(); // 유저 없으면 오류
+
+        Comment comment = new Comment(trackId, user, content);
         return commentRepo.save(comment);
     }
 
@@ -36,10 +39,5 @@ public class CommentService {
 
     public void deleteComment(Long id) {
         commentRepo.deleteById(id);
-    }
-
-    public LikedTrack likeTrack(String trackId) {
-        LikedTrack liked = new LikedTrack(trackId);
-        return likedTrackRepo.save(liked);
     }
 }

@@ -44,6 +44,8 @@ public class SpotifyAuthService {
 
 
     public void requestToken(String code) {
+        System.out.println(">>> requestToken called, code = " + code);
+
         String url = "https://accounts.spotify.com/api/token";
 
         String body = "grant_type=authorization_code"
@@ -59,9 +61,21 @@ public class SpotifyAuthService {
 
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-        TokenResponse res = rest.exchange(url, HttpMethod.POST, entity, TokenResponse.class).getBody();
-        if (res != null) accessToken = res.access_token;
+        ResponseEntity<TokenResponse> response =
+                rest.exchange(url, HttpMethod.POST, entity, TokenResponse.class);
+
+        System.out.println(">>> token response status = " + response.getStatusCode());
+        System.out.println(">>> token response body = " + response.getBody());
+
+        TokenResponse res = response.getBody();
+        if (res != null) {
+            accessToken = res.access_token;
+            System.out.println(">>> access_token = " + accessToken);
+        }
+
+        System.out.println(">>> requestToken finished");
     }
+
 
     public String getToken() {
         return accessToken;

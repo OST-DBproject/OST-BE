@@ -17,13 +17,13 @@ public class PlaylistController {
     }
 
     @PostMapping("/auto/artist")
-    public Playlist autoArtist() {
-        return playlistService.createArtistPlaylist();
+    public Playlist autoArtist(@RequestParam Long userId) {
+        return playlistService.createArtistPlaylist(userId);
     }
 
     @PostMapping("/auto/date")
-    public Playlist autoDate() {
-        return playlistService.createDatePlaylist();
+    public Playlist autoDate(@RequestParam Long userId) {
+        return playlistService.createDatePlaylist(userId);
     }
 
     @GetMapping

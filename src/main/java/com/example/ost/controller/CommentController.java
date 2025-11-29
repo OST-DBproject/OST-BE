@@ -19,10 +19,11 @@ public class CommentController {
     // 댓글 추가
     @PostMapping("/comment")
     public Comment add(
+            @RequestParam String spotifyId,
             @RequestParam String trackId,
             @RequestParam String content
     ) {
-        return service.addComment(trackId, content);
+        return service.addComment(spotifyId, trackId, content);
     }
 
     // 특정 곡 댓글 리스트 가져오기

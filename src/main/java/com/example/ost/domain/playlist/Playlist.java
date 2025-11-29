@@ -1,6 +1,7 @@
 package com.example.ost.domain.playlist;
 
 import com.example.ost.domain.track.LikedTrack;
+import com.example.ost.domain.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,10 @@ public class Playlist {
 
     private LocalDateTime createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @ManyToMany
     @JoinTable(
             name="playlist_tracks",
@@ -31,11 +36,13 @@ public class Playlist {
 
     protected Playlist() {}
 
-    public Playlist(String name, String type, LocalDateTime createdAt) {
+    public Playlist(User user, String name, String type, LocalDateTime createdAt) {
+        this.user = user;
         this.name = name;
         this.type = type;
         this.createdAt = createdAt;
     }
+
 
     public Long getId() { return id; }
     public String getName() { return name; }

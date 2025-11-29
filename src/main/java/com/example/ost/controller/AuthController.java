@@ -24,8 +24,14 @@ public class AuthController {
     @GetMapping("/auth/callback")
     @ResponseBody
     public String callback(@RequestParam String code) {
+        System.out.println(">>> /auth/callback called, code = " + code);
+
         authService.requestToken(code);
+
+        System.out.println(">>> /auth/callback finished");
+
         return "Success! Spotify Login Completed";
     }
+
 
 }

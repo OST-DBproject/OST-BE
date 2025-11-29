@@ -18,35 +18,30 @@ public class TrackManagementController {
         this.service = service;
     }
 
-    // 좋아요
     @PostMapping("/like")
-    public String like(@RequestParam String id) {
-        service.saveTrack(id);
+    public String like(@RequestParam Long userId, @RequestParam String trackId) {
+        service.saveTrack(userId, trackId);
         return "saved";
     }
 
-    // 좋아요 취소
     @DeleteMapping("/unlike")
-    public String unlike(@RequestParam String id) {
-        service.removeTrack(id);
+    public String unlike(@RequestParam Long userId, @RequestParam String trackId) {
+        service.removeTrack(userId, trackId);
         return "removed";
     }
 
-    // 좋아요 목록 조회
     @GetMapping("/liked")
-    public List<LikedTrack> likedTracks() {
-        return service.getLikedTracks();
+    public List<LikedTrack> liked(@RequestParam Long userId) {
+        return service.getUserTracks(userId);
     }
 
-    // 1) 가수별 묶음 조회
     @GetMapping("/group/artist")
-    public Map<String, List<LikedTrack>> groupByArtist() {
-        return service.groupByArtist();
+    public Map<String, List<LikedTrack>> groupArtist(@RequestParam Long userId) {
+        return service.groupByArtist(userId);
     }
 
-    // 2) 날짜별 묶음 조회
     @GetMapping("/group/date")
-    public Map<LocalDate, List<LikedTrack>> groupByDate() {
-        return service.groupByDate();
+    public Map<LocalDate, List<LikedTrack>> groupDate(@RequestParam Long userId) {
+        return service.groupByDate(userId);
     }
 }

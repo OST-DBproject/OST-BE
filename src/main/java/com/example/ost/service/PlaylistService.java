@@ -2,6 +2,7 @@ package com.example.ost.service;
 
 import com.example.ost.domain.playlist.Playlist;
 import com.example.ost.domain.track.LikedTrack;
+import com.example.ost.domain.user.User;
 import com.example.ost.repository.LikedTrackRepository;
 import com.example.ost.repository.PlaylistRepository;
 import org.springframework.stereotype.Service;
@@ -18,20 +19,32 @@ public class PlaylistService {
 
     private final LikedTrackRepository likedTrackRepository;
     private final PlaylistRepository playlistRepository;
+    private final UserService userService;
 
-    public PlaylistService(LikedTrackRepository likedTrackRepository, PlaylistRepository playlistRepository) {
+    public PlaylistService(LikedTrackRepository likedTrackRepository,
+                           PlaylistRepository playlistRepository,
+                           UserService userService) {
         this.likedTrackRepository = likedTrackRepository;
         this.playlistRepository = playlistRepository;
+        this.userService = userService;
     }
 
+
     @Transactional
-    public Playlist createArtistPlaylist() {
-        List<LikedTrack> liked = likedTrackRepository.findAll();
+    public Playlist createArtistPlaylist(Long userId) {
+        User user = userService.getUser(userId);
+
+        List<LikedTrack> liked = likedTrackRepository.findAllByUser(user);
 
         Map<String, List<LikedTrack>> groups =
                 liked.stream().collect(Collectors.groupingBy(LikedTrack::getArtistName));
 
-        Playlist playlist = new Playlist("Artist Playlist", "ARTIST", LocalDateTime.now());
+        Playlist playlist = new Playlist(
+                user,
+                "Artist Playlist",
+                "ARTIST",
+                LocalDateTime.now()
+        );
 
         groups.values().forEach(playlist.getTracks()::addAll);
 
@@ -39,19 +52,26 @@ public class PlaylistService {
     }
 
     @Transactional
-    public Playlist createDatePlaylist() {
-        List<LikedTrack> liked = likedTrackRepository.findAll();
+    public Playlist createDatePlaylist(Long userId) {
+        User user = userService.getUser(userId);
+
+        List<LikedTrack> liked = likedTrackRepository.findAllByUser(user);
 
         Map<LocalDate, List<LikedTrack>> groups =
-                liked.stream()
-                        .collect(Collectors.groupingBy(t -> t.getLikedAt().toLocalDate()));
+                liked.stream().collect(Collectors.groupingBy(t -> t.getLikedAt().toLocalDate()));
 
-        Playlist playlist = new Playlist("Date Playlist", "DATE", LocalDateTime.now());
+        Playlist playlist = new Playlist(
+                user,
+                "Date Playlist",
+                "DATE",
+                LocalDateTime.now()
+        );
 
         groups.values().forEach(playlist.getTracks()::addAll);
 
         return playlistRepository.save(playlist);
     }
+
 
     @Transactional(readOnly = true)
     public List<Playlist> getAllPlaylists() {
