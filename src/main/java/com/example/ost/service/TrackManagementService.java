@@ -1,6 +1,7 @@
 package com.example.ost.service;
 
 import com.example.ost.domain.track.LikedTrack;
+import com.example.ost.dto.SpotifyTrackInfoDto;
 import com.example.ost.repository.LikedTrackRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,42 +16,47 @@ import java.util.stream.Collectors;
 public class TrackManagementService {
 
     private final LikedTrackRepository likedTrackRepository;
+    private final SpotifyApiClient spotifyApiClient; // ★ 추가됨
 
-    public TrackManagementService(LikedTrackRepository likedTrackRepository) {
+    public TrackManagementService(LikedTrackRepository likedTrackRepository,
+                                  SpotifyApiClient spotifyApiClient) {  // ★ 추가됨
         this.likedTrackRepository = likedTrackRepository;
+        this.spotifyApiClient = spotifyApiClient;     // ★ 추가됨
     }
 
     @Transactional
     public void saveTrack(String spotifyTrackId) {
+
+        // 이미 존재하면 저장 안 함
         if (likedTrackRepository.existsBySpotifyTrackId(spotifyTrackId)) {
             return;
         }
 
-        LikedTrack track = new LikedTrack(spotifyTrackId); // 1개짜리 생성자 사용
+        // ★ Spotify API 호출해서 실제 정보 가져오기
+        SpotifyTrackInfoDto info = spotifyApiClient.getTrackInfo(spotifyTrackId);
+
+        LikedTrack track = new LikedTrack(
+                info.getId(),          // id
+                info.getName(),        // track name
+                info.getArtistName(),  // artist
+                info.getAlbumName(),   // album
+                LocalDateTime.now()
+        );
+
+
         likedTrackRepository.save(track);
     }
 
-
-    /**
-     * 좋아요 취소
-     */
     @Transactional
     public void removeTrack(String spotifyTrackId) {
         likedTrackRepository.deleteBySpotifyTrackId(spotifyTrackId);
     }
 
-    /**
-     * 좋아요 전체 목록
-     */
     @Transactional(readOnly = true)
     public List<LikedTrack> getLikedTracks() {
         return likedTrackRepository.findAll();
     }
 
-    /**
-     * 같은 아티스트끼리 묶기
-     * key: artistName, value: 그 가수 곡 리스트
-     */
     @Transactional(readOnly = true)
     public Map<String, List<LikedTrack>> groupByArtist() {
         List<LikedTrack> tracks = likedTrackRepository.findAll();
@@ -58,10 +64,6 @@ public class TrackManagementService {
                 .collect(Collectors.groupingBy(LikedTrack::getArtistName));
     }
 
-    /**
-     * 좋아요 누른 날짜별로 묶기
-     * key: LocalDate(YYYY-MM-DD), value: 그날 좋아요한 곡 리스트
-     */
     @Transactional(readOnly = true)
     public Map<LocalDate, List<LikedTrack>> groupByDate() {
         List<LikedTrack> tracks = likedTrackRepository.findAll();

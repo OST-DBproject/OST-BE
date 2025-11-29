@@ -46,10 +46,4 @@ public class CommentController {
         service.deleteComment(id);
         return "deleted";
     }
-
-    // 좋아요 등록
-    @PostMapping("/like")
-    public LikedTrack like(@RequestParam String trackId) {
-        return service.likeTrack(trackId);
-    }
 }

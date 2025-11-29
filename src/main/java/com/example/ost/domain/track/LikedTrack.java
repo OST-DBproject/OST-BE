@@ -26,19 +26,25 @@ public class LikedTrack {
     @Column(nullable = false)
     private LocalDateTime likedAt;
 
-    // 기본 생성자 (JPA 필수)
-    protected LikedTrack() {
-    }
+    protected LikedTrack() {}
 
-    public LikedTrack(String spotifyTrackId) {
-        this.spotifyTrackId = spotifyTrackId;
-        this.trackName = "Unknown";
-        this.artistName = "Unknown";
-        this.albumName = "Unknown";
+    public LikedTrack(String trackId) {
+        this.spotifyTrackId = trackId;
         this.likedAt = LocalDateTime.now();
     }
 
-    // ==== getter / setter ==== //
+    public LikedTrack(String spotifyTrackId,
+                      String trackName,
+                      String artistName,
+                      String albumName,
+                      LocalDateTime likedAt) {
+
+        this.spotifyTrackId = spotifyTrackId;
+        this.trackName = trackName;
+        this.artistName = artistName;
+        this.albumName = albumName;
+        this.likedAt = likedAt;
+    }
 
     public Long getId() {
         return id;
