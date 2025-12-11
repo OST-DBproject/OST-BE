@@ -49,7 +49,7 @@ public class SpotifyApiService {
         try {
             String url =
                     "https://api.spotify.com/v1/search" +
-                            "?q=year:2024" +
+                            "?q=year:2025" +
                             "&type=track" +
                             "&limit=20" +
                             "&market=KR";
